@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 // import Diary from '../diaryBody/index'
 import { Redirect } from 'react-router-dom'
 
+
 class Controller extends Component {
     constructor() {
         super()
@@ -10,8 +11,9 @@ class Controller extends Component {
             email: '',
             password: '',
             re_password: '',
-            hasAccount: false,
+            hasAccount: true,
             isAuthenticated: false,
+            isPreviouslyLoggedIn: false,
             uuid: ''
         }
 
@@ -93,6 +95,27 @@ class Controller extends Component {
     }
     size = {
         width: '18rem'
+    }
+    componentDidMount() {
+        if (sessionStorage.getItem('uuid') != null) {
+            const data = {
+                uuid: sessionStorage.getItem('uuid'),
+            }
+             fetch('http://localhost:8000/userDetails', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: 'POST',
+            body:JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                if (data.accepted) {
+                    this.setState({ email: data.email })
+                }
+            })
+        }
     }
 
     render() {
